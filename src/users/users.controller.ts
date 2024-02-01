@@ -8,40 +8,59 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('users')
 export class UsersController {
-  @Get() // GET /users
-  findAll() {
-    return [];
-  }
+  // constructor to inject the UsersService i.e. dependency injection
+  constructor(private usersService: UsersService) {}
 
   @Get() // GET /users
-  findAllWithQueryParams(
-    @Query('role') role?: 'INTERN' | 'ENGINEER' | 'ADMIN',
-  ) {
-    console.log(role);
-
-    return role;
+  findAll(@Query('role') role?: 'INTERN' | 'ENGINEER' | 'ADMIN') {
+    return this.usersService.findAll(role);
   }
+
+  // @Get() // GET /users
+  // findAllWithQueryParams(
+  //   @Query('role') role?: 'INTERN' | 'ENGINEER' | 'ADMIN',
+  // ) {
+  //   console.log(role);
+
+  //   return role;
+  // }
 
   @Get(':id') // GET /users/:id
   findOne(@Param('id') id: string) {
-    return { id };
+    return this.usersService.findOne(+id); // + -> unary plus operator to convert string to number
   }
 
   @Post() // POST /users
-  create(@Body() user: {}) {
-    return user;
+  create(
+    @Body()
+    user: {
+      name: string;
+      email: string;
+      role: 'INTERN' | 'ENGINEER' | 'ADMIN';
+    },
+  ) {
+    return this.usersService.create(user);
   }
 
   @Patch(':id') // PATCH /users/:id
-  update(@Param('id') id: string, @Body() userUpdate: {}) {
-    return { id, ...userUpdate };
+  update(
+    @Param('id') id: string,
+    @Body()
+    userUpdate: {
+      name?: string;
+      email?: string;
+      role?: 'INTERN' | 'ENGINEER' | 'ADMIN';
+    },
+  ) {
+    return this.usersService.update(+id, userUpdate);
   }
 
   @Delete(':id') // DELETE /users/:id
   delete(@Param('id') id: string) {
-    return { id };
+    return this.usersService.delete(+id);
   }
 }
